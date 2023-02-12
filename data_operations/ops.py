@@ -25,6 +25,18 @@ def create_user(user):
     return user
 
 
+def find_user_by_email(email):
+    db = connect()
+    if db is None:
+        return None
+    if not is_valid_email(email):
+        return False
+    command_handler = db.cursor()
+    command_handler.execute("""SELECT * FROM USER WHERE email = :email""", {'email': email})
+    got = command_handler.fetchone()
+    return got
+
+
 def update_user_name(name, user_uuid) -> bool:
     db = connect()
     if db is None:
