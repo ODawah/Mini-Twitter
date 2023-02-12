@@ -1,11 +1,11 @@
 import unittest
-import sqlite3_connector
+import sql_connector
 import os
 
 
 class TestSqlite3Connector(unittest.TestCase):
     def test_connect(self):
-        self.assertIsNotNone(sqlite3_connector.connect())
+        self.assertIsNotNone(sql_connector.connect())
         os.remove("twitter.db")
 
 

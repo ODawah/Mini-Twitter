@@ -1,11 +1,11 @@
 import uuid
-import database.sqlite3_connector as conn
+from database.sql_connector import connect
 from utilities.hasher import encrypt
 
 
 # create_user: function takes user's class and add user to the database then return bool of success
 def create_user(user):
-    db = conn.connect()
+    db = connect()
     if db is None:
         return None
     command_handler = db.cursor()
