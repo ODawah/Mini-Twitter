@@ -37,6 +37,17 @@ def find_user_by_email(email):
     return got
 
 
+def find_user_by_uuid(uuid_str):
+    db = connect()
+    if db is None:
+        return None
+    if not is_valid_uuid(uuid_str):
+        return False
+    command_handler = db.cursor()
+    command_handler.execute("""SELECT * FROM USER WHERE uuid = :uuid""", {'uuid': uuid_str})
+    got = command_handler.fetchone()
+    return got
+
 def update_user_name(name, user_uuid) -> bool:
     db = connect()
     if db is None:
