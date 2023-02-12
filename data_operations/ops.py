@@ -48,6 +48,7 @@ def find_user_by_uuid(uuid_str):
     got = command_handler.fetchone()
     return got
 
+
 def update_user_name(name, user_uuid) -> bool:
     db = connect()
     if db is None:
@@ -55,9 +56,28 @@ def update_user_name(name, user_uuid) -> bool:
     if not is_valid_user_name(name) or not is_valid_uuid(user_uuid):
         return False
     command_handler = db.cursor()
-    command_handler.execute("""UPDATE USER SET name = :name 
+    command_handler.execute("""UPDATE USER SET name = :name
                             WHERE uuid = :uuid """,
                             {'name': name, 'uuid': user_uuid})
+    db.commit()
+    if command_handler.rowcount != 1:
+        return False
+    else:
+        return True
+
+
+def update_user_password(pass_str, user_uuid):
+    db = connect()
+    if db is None:
+        return None
+    if not is_valid_uuid(user_uuid):
+        return None
+    hashed_pass = encrypt(pass_str)
+    command_handler = db.cursor()
+    command_handler.execute("""UPDATE USER SET password = :pass 
+                            WHERE uuid = :uuid """,
+                            {'pass': hashed_pass, 'uuid': user_uuid})
+    db.commit()
     if command_handler.rowcount != 1:
         return False
     else:
