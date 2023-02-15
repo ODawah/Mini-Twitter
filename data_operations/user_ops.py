@@ -60,7 +60,7 @@ def find_user_by_uuid(uuid_str):
 def update_user_name(name, user_uuid) -> bool:
     db = connect()
     if db is None:
-        return None
+        return False
     if not is_valid_user_name(name) or not is_valid_uuid(user_uuid):
         return False
     command_handler = db.cursor()

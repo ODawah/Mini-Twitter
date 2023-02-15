@@ -2,7 +2,7 @@ import unittest
 
 import bcrypt
 
-from user_ops import create_user, find_user_by_uuid, find_user_by_email, delete_user
+from user_ops import create_user, find_user_by_uuid, find_user_by_email, delete_user,update_user_password,update_user_name
 import models.users as user
 from utilities.validate import is_valid_uuid
 from utilities.hasher import encrypt
@@ -58,6 +58,25 @@ class TestOperations(unittest.TestCase):
         self.assertEqual(case4.email, "john@gmail.com")
         self.assertEqual(case4.name, "john_doe")
         self.assertTrue(bcrypt.checkpw(bytes("test", 'utf-8'), case4.password))
+
+        os.remove("twitter.db")
+
+    def test_find_update_user_name(self):
+        # insert user for test
+        u = create_user(user.User(name="john_doe", email="john@gmail.com", password="test"))
+        # empty name
+        case1 = update_user_name("", u.uuid)
+        self.assertFalse(case1)
+        # wrong uuid format
+        case2 = update_user_name("george", "35278549-618a-4edc-be2df18804522ab5")
+        self.assertFalse(case2)
+        # uuid not in database
+        case3 = update_user_name("george", "35278549-618a-4edc-be2d-f18804522ab5")
+        self.assertFalse(case3)
+        case4 = update_user_name("george", u.uuid)
+        self.assertTrue(case4)
+        res = find_user_by_uuid(u.uuid)
+        self.assertEqual(res.name, "george")
 
         os.remove("twitter.db")
 
