@@ -35,3 +35,9 @@ def is_valid_email(email_address):
     match = re.match(regex, email_address)
 
     return bool(match)
+
+
+def is_valid_tweet_text(text):
+    if len(text) > 280 or text == "":
+        return False
+    return True
