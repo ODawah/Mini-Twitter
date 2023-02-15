@@ -13,7 +13,7 @@ def create_tweet(tweet):
         return None
     command_handler = db.cursor()
     tweet.uuid = str(uuid.uuid4())
-    tweet.created_at = datetime.now()
+    tweet.created_at = datetime.utcnow()
     command_handler.execute("""INSERT INTO TWEETS (uuid,tweet,is_reply,is_deleted,created_at,user_uuid)
                                 VALUES (?, ?, ?, ?, ?, ?)""",
                             (tweet.uuid, tweet.text, tweet.is_reply, tweet.is_deleted, tweet.created_at,
@@ -22,3 +22,36 @@ def create_tweet(tweet):
     if command_handler.rowcount != 1:
         return None
     return tweet
+
+
+def find_tweet_by_uuid(tweet_uuid):
+    db = connect()
+    if db is None:
+        return None
+    if not is_valid_uuid(tweet_uuid):
+        return None
+    command_handler = db.cursor()
+    command_handler.execute("""SELECT * FROM TWEETS WHERE uuid = :uuid""", {'uuid': tweet_uuid})
+    got_tweet = command_handler.fetchone()
+    if got_tweet is None:
+        return None
+    result = Tweet(uuid=got_tweet[0], text=got_tweet[1], is_reply=got_tweet[2],
+                   is_deleted=got_tweet[3], created_at=got_tweet[4],
+                   user_uuid=got_tweet[5])
+    return result
+
+
+def delete_tweet(tweet_uuid):
+    db = connect()
+    if db is None:
+        return False
+    if not is_valid_uuid(tweet_uuid):
+        return False
+    command_handler = db.cursor()
+    command_handler.execute("""UPDATE TWEETS SET is_deleted = TRUE
+                            WHERE uuid = :uuid""",
+                            {'uuid': tweet_uuid})
+    db.commit()
+    if command_handler.rowcount != 1:
+        return False
+    return True
