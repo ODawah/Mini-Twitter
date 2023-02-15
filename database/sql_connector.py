@@ -7,7 +7,7 @@ def connect():
         conn = sqlite3.connect("twitter.db")
         c = conn.cursor()
         # USERS TABLE
-        c.execute("""CREATE TABLE IF NOT EXISTS USER (
+        c.execute("""CREATE TABLE IF NOT EXISTS USERS (
             uuid CHAR(36) PRIMARY KEY,
             email VARCHAR(255) UNIQUE,
             name VARCHAR(70),
@@ -21,8 +21,9 @@ def connect():
             tweet TEXT NOT NULL,
             is_reply BOOL,
             is_deleted BOOL,
-            user_id CHAR(36) NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES USER(uuid)
+            created_at timestamp,
+            user_uuid CHAR(36) NOT NULL,
+            FOREIGN KEY (user_uuid) REFERENCES USER(uuid)
             )
             """)
         return conn
