@@ -1,24 +1,42 @@
 import unittest
-from ops import create_user
+
+import bcrypt
+
+from user_ops import create_user, find_user_by_uuid, find_user_by_email, delete_user
 import models.users as user
 from utilities.validate import is_valid_uuid
+from utilities.hasher import encrypt
 import os
 
 
 class TestOperations(unittest.TestCase):
     def test_create_user(self):
-        result = create_user(user.User(name="test", email="test@gmail.com", password="test"))
-        self.assertIsNotNone(result)
-        self.assertEqual(is_valid_uuid(result.uuid), True)
-        self.assertEqual(result.name, "test")
-        self.assertEqual(result.email, "test@gmail.com")
-        self.assertNotEqual(result.password, "test")
-        result = create_user(user.User(name="", email="test@gmail.com", password="test"))
-        self.assertIsNone(result)
-        result = create_user(user.User(name="", email="", password=""))
-        self.assertIsNone(result)
-        result = create_user(user.User(name="test", email="test@gmail.com", password=""))
-        self.assertIsNone(result)
+        case1 = create_user(user.User(name="john_doe", email="test@gmail.com", password="test"))
+        self.assertIsNotNone(case1)
+        self.assertTrue(is_valid_uuid(case1.uuid))
+        self.assertEqual(case1.name, "john_doe")
+        self.assertEqual(case1.email, "test@gmail.com")
+        self.assertNotEqual(case1.password, "test")
+        case2 = create_user(user.User(name="", email="test@gmail.com", password="test"))
+        self.assertIsNone(case2)
+        case3 = create_user(user.User(name="", email="", password=""))
+        self.assertIsNone(case3)
+        case4 = create_user(user.User(name="test", email="test@gmail.com", password=""))
+        self.assertIsNone(case4)
+
+    def test_find_user_by_email(self):
+        case1 = find_user_by_email("")
+        self.assertIsNone(case1)
+        case2 = find_user_by_email("@wrong email type")
+        self.assertIsNone(case2)
+        case3 = find_user_by_email("not_registerd@email.com")
+        self.assertIsNone(case3)
+        case4 = find_user_by_email("test@gmail.com")
+        self.assertIsNotNone(case4)
+        self.assertTrue(is_valid_uuid(case4.uuid))
+        self.assertEqual(case4.email, "test@gmail.com")
+        self.assertEqual(case4.name, "john_doe")
+        self.assertTrue(bcrypt.checkpw(bytes("test", 'utf-8'), case4.password))
 
         os.remove("twitter.db")
 
