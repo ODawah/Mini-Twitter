@@ -77,9 +77,9 @@ def update_user_name(name, user_uuid) -> bool:
 def update_user_password(pass_str, user_uuid):
     db = connect()
     if db is None:
-        return None
-    if not is_valid_uuid(user_uuid):
-        return None
+        return False
+    if not is_valid_uuid(user_uuid) or pass_str == "":
+        return False
     hashed_pass = encrypt(pass_str)
     command_handler = db.cursor()
     command_handler.execute("""UPDATE USER SET password = :pass 

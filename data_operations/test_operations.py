@@ -80,6 +80,25 @@ class TestOperations(unittest.TestCase):
 
         os.remove("twitter.db")
 
+    def test_find_update_user_password(self):
+        # insert user for test
+        u = create_user(user.User(name="john_doe", email="john@gmail.com", password="test"))
+        # empty password
+        case1 = update_user_password("", u.uuid)
+        self.assertFalse(case1)
+        # wrong uuid format
+        case2 = update_user_password("new_password", "35278549-618a-4edc-be2df18804522ab5")
+        self.assertFalse(case2)
+        # uuid not in database
+        case3 = update_user_password("new_password", "35278549-618a-4edc-be2d-f18804522ab5")
+        self.assertFalse(case3)
+        case4 = update_user_password("new_password", u.uuid)
+        self.assertTrue(case4)
+        res = find_user_by_uuid(u.uuid)
+        self.assertTrue(bcrypt.checkpw(bytes("new_password", 'utf-8'), res.password))
+
+        os.remove("twitter.db")
+
 
 if __name__ == '__main__':
     unittest.main()
