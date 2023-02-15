@@ -19,7 +19,7 @@ def create_user(user):
     user.password = encrypt(user.password)
     if user.password == "":
         return None
-    command_handler.execute("INSERT INTO USER (uuid,name, email, password) VALUES (?, ?, ?, ?)",
+    command_handler.execute("INSERT INTO USERS (uuid,name, email, password) VALUES (?, ?, ?, ?)",
                             (user.uuid, user.name, user.email, user.password))
     db.commit()
     if command_handler.rowcount != 1:
@@ -34,7 +34,7 @@ def find_user_by_email(email):
     if not is_valid_email(email):
         return None
     command_handler = db.cursor()
-    command_handler.execute("""SELECT * FROM USER WHERE email = :email""", {'email': email})
+    command_handler.execute("""SELECT * FROM USERS WHERE email = :email""", {'email': email})
     got_user = command_handler.fetchone()
     if got_user is None:
         return None
@@ -49,7 +49,7 @@ def find_user_by_uuid(uuid_str):
     if not is_valid_uuid(uuid_str):
         return None
     command_handler = db.cursor()
-    command_handler.execute("""SELECT * FROM USER WHERE uuid = :uuid""", {'uuid': uuid_str})
+    command_handler.execute("""SELECT * FROM USERS WHERE uuid = :uuid""", {'uuid': uuid_str})
     got_user = command_handler.fetchone()
     if got_user is None:
         return None
@@ -64,7 +64,7 @@ def update_user_name(name, user_uuid) -> bool:
     if not is_valid_user_name(name) or not is_valid_uuid(user_uuid):
         return False
     command_handler = db.cursor()
-    command_handler.execute("""UPDATE USER SET name = :name
+    command_handler.execute("""UPDATE USERS SET name = :name
                             WHERE uuid = :uuid """,
                             {'name': name, 'uuid': user_uuid})
     db.commit()
@@ -82,7 +82,7 @@ def update_user_password(pass_str, user_uuid):
         return False
     hashed_pass = encrypt(pass_str)
     command_handler = db.cursor()
-    command_handler.execute("""UPDATE USER SET password = :pass 
+    command_handler.execute("""UPDATE USERS SET password = :pass 
                             WHERE uuid = :uuid """,
                             {'pass': hashed_pass, 'uuid': user_uuid})
     db.commit()
@@ -99,7 +99,7 @@ def delete_user(user_uuid):
     if not is_valid_uuid(user_uuid):
         return False
     command_handler = db.cursor()
-    command_handler.execute("DELETE FROM USER WHERE uuid = :uuid ", {'uuid': user_uuid})
+    command_handler.execute("DELETE FROM USERS WHERE uuid = :uuid ", {'uuid': user_uuid})
     db.commit()
     if command_handler.rowcount != 1:
         return False
