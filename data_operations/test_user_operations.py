@@ -26,7 +26,7 @@ class TestOperations(unittest.TestCase):
         os.remove("twitter.db")
 
     def test_find_user_by_email(self):
-        case1 = create_user(user.User(name="john_doe", email="test@gmail.com", password="test"))
+        create_user(user.User(name="john_doe", email="test@gmail.com", password="test"))
         case1 = find_user_by_email("")
         self.assertIsNone(case1)
         case2 = find_user_by_email("@wrong email type")
