@@ -55,3 +55,24 @@ def delete_tweet(tweet_uuid):
     if command_handler.rowcount != 1:
         return False
     return True
+
+
+def get_user_tweets(user_uuid):
+    db = connect()
+    if db is None:
+        return []
+    if not is_valid_uuid(user_uuid):
+        return []
+    command_handler = db.cursor()
+    command_handler.execute("""SELECT * FROM TWEETS WHERE
+                            user_uuid = :uuid""", {'uuid': user_uuid})
+    records = command_handler.fetchall()
+    if not records:
+        return []
+    res = []
+    for record in records:
+        t = Tweet(uuid=record[0], text=record[1], is_reply=records[2],
+                  is_deleted=record[3], created_at=record[4],
+                  user_uuid=record[5])
+        res.append(t)
+    return res
