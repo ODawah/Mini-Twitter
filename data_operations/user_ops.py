@@ -95,9 +95,9 @@ def update_user_password(pass_str, user_uuid):
 def delete_user(user_uuid):
     db = connect()
     if db is None:
-        return None
+        return False
     if not is_valid_uuid(user_uuid):
-        return None
+        return False
     command_handler = db.cursor()
     command_handler.execute("DELETE FROM USER WHERE uuid = :uuid ", {'uuid': user_uuid})
     db.commit()
